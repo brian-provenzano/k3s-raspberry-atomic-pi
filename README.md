@@ -68,8 +68,8 @@ Trying [bitnami sealed secrets](https://github.com/bitnami-labs/sealed-secrets) 
 
 Quick process:
 - create a k8s secret (base64 encoded)
-- `kubeseal --format yaml <k8s-secrets.yaml >sealedsecrets.yaml`
-- `kubectl apply -f sealedsecrets.yaml`
+- `kubeseal --format yaml <pihole-secrets.yaml >sealed-secrets.yaml --controller-name=sealed-secrets --controller-namespace=sealed-secrets`
+- `kubectl apply -f sealed-secrets.yaml`
 
 You can commit the sealedsecret to git
 

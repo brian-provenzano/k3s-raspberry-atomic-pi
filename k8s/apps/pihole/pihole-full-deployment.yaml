@@ -78,7 +78,7 @@ metadata:
 spec:
   type: LoadBalancer
   # force to use 1 specific IP for this service (since we are UDP and TCP sep services)
-  loadBalancerIP: 192.168.10.220
+  loadBalancerIP: 10.0.0.125
   externalTrafficPolicy: Local
   sessionAffinity: None
   ports:
@@ -113,7 +113,7 @@ spec:
   type: LoadBalancer
   sessionAffinity: None
   # force to use 1 specific IP for this service (since we are UDP and TCP sep services)
-  loadBalancerIP: 192.168.10.220
+  loadBalancerIP: 10.0.0.125
   externalTrafficPolicy: Local
   ports:
     - port: 53

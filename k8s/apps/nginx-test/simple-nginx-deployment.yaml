@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  #annotations: #this can be something from git commit etc
+    #kubernetes.io/change-cause: update image to nginx 1.16.1
+  labels:
+    app: nginx
+  name: nginx
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: nginx
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginx
+    spec:
+      #affinity:
+        #nodeAffinity:
+          # requiredDuringSchedulingIgnoredDuringExecution:
+          #   nodeSelectorTerms:
+          #   - matchExpressions:
+          #     - key: beta.kubernetes.io/arch
+          #       operator: NotIn
+          #       values:
+          #       - arm
+          # preferredDuringSchedulingIgnoredDuringExecution:
+          # - weight: 1
+          #   preference:
+          #     matchExpressions:
+          #     - key: beta.kubernetes.io/arch
+          #       operator: NotIn
+          #       values:
+          #       - arm
+      containers:
+      - image: nginx:1.16.1
+        name: nginx
+        resources:
+          requests:
+            memory: "64M"
+            cpu: "250m"
+          limits:
+            memory: "128M"
+            cpu: "500m"
+status: {}

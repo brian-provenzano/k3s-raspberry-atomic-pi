@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2020-02-29T21:29:51Z"
+  labels:
+    app.kubernetes.io/instance: monitoring-grafana
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 6.6.1
+    helm.sh/chart: grafana-5.0.0
+  name: monitoring-grafana
+  namespace: monitoring
+  resourceVersion: "6427289"
+  selfLink: /api/v1/namespaces/monitoring/services/monitoring-grafana
+  uid: 202997d9-b709-40b7-b643-bcc3966b61f0
+spec:
+  clusterIP: 10.43.7.235
+  ports:
+  - name: service
+    port: 80
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app.kubernetes.io/instance: monitoring-grafana
+    app.kubernetes.io/name: grafana
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

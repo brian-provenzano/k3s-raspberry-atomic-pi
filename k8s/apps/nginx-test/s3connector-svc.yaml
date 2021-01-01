@@ -1,0 +1,2 @@
+NAME                  TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+s3connector-service   ClusterIP   10.43.251.175   <none>        5678/TCP   89d

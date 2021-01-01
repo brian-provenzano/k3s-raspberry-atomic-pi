@@ -1,0 +1,29 @@
+#
+# After applying the helm chart update the service to use a metallb loadbalancer instead of clusterip
+#
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    metallb.universe.tf/address-pool: network-services
+  labels:
+    app.kubernetes.io/instance: monitoring-grafana
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 6.6.1
+    helm.sh/chart: grafana-5.0.0
+  name: monitoring-grafana
+  namespace: monitoring
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: service
+    nodePort: 32721
+    port: 80
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app.kubernetes.io/instance: monitoring-grafana
+    app.kubernetes.io/name: grafana
+  sessionAffinity: None
+  type: LoadBalancer

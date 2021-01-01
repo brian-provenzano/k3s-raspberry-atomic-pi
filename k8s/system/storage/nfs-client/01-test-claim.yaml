@@ -1,0 +1,13 @@
+# use this to setup a quick test claim to test the provisioner
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: test-claim
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: managed-nfs-storage
+  resources:
+    requests:
+      storage: 2Gi

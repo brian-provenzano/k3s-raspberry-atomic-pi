@@ -1,0 +1,23 @@
+# use this in conjunction with `test-claim.yaml` to use the new pvc with a pod to test functionality
+kind: Pod
+apiVersion: v1
+metadata:
+  name: test-pod
+  namespace: default
+spec:
+  containers:
+  - name: test-pod
+    image: busybox:latest
+    command:
+      - "/bin/sh"
+    args:
+      - "-c"
+      - "touch /mnt/SUCCESS && exit 0 || exit 1"
+    volumeMounts:
+      - name: nfs-pvc
+        mountPath: "/mnt"
+  restartPolicy: "Never"
+  volumes:
+    - name: nfs-pvc
+      persistentVolumeClaim:
+        claimName: test-claim

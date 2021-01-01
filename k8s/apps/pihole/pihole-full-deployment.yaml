@@ -1,0 +1,247 @@
+#
+# Uses metallb for loadbalancer for the services
+#
+apiVersion: v1
+kind: Namespace
+metadata:
+   name: pihole
+---
+# Claim on my NFS pv via nfs client storage provisioner (NFS server on the k8s node for now, but can be external NFS server)
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-pihole
+  namespace: pihole
+  # can skip this annotation if this storageClass is 'default' (it is in my cluster :))
+  annotations:
+    storageClassName: "managed-nfs-storage"
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+# optional for now to customize this if needed.
+# defaults are google DNS
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pihole-custom-dnsmasq
+  namespace: pihole
+  labels:
+    app: pihole
+data:
+  02-custom.conf: |
+    addn-hosts=/etc/addn-hosts
+  addn-hosts: |
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pihole-config
+  namespace: pihole
+data:
+  TZ: "America/Denver"
+  # cloudflared container only
+  TUNNEL_DNS_UPSTREAM: https://1.1.1.1/dns-query,https://1.0.0.1/dns-query
+---
+# need bitnami sealed screts controller installed; create sealed secret with kubeseal client
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: pihole-secrets
+  namespace: pihole
+spec:
+  encryptedData:
+    WEB_PASSWORD: AgCENJ6fn1/TqfpAIJFBOy6SXLObh+iCg0zme7Ap7Dy227kkuGRghql4wetDbSWeS3r4pxYTvPY2bXpQyKKYsO8ZD/1AUD7VlpaP6KCGRVM91CZuf95fXfUVGLRa0E460MqVJ8mehL6jl5QpearrgyITGR2isjOQpXNWnlh5tNaZExSpL7R34Z2nFGo+dvCpyfDPpS/ojt/zUYR8sJKzMm9pDFocmGaGN2oL02wgjZwA2gc4JOF25nmMaUuBtHCGBIaTsu+yxkH/dN+OtcIUryAnY6MezAg/kW4UjHb8/4IHi4A0PtPd+om2+fl9bpm3tuchZvm//N53SCUPU32GVEUhiDlSd6zTRXluAwDpB+46yyTzCLW61/LA251xtoCIAqHVnxOeLdaqOdnL+Dd7DqinrChgKE9qBvqBhlwvCmPuC3AmJpoj4SOLcYPKOwFMS7vjuMT4vU+2hyq0RACuz0SwQCl6ZQjYdQttQjLzxJ4pGOw/Hm2KxH4aAaANvoWLXxfSVHz5D3ZwRmbI2BZE6qb1ckrL4ZDLD4NjUnM+M6tVqWYXVHLsFLzie+cHO0Zs7nFMMeJpSa8N7UA2Wd9QLAQ690eBvEPqAgApIpDWDW2X+PiZx6ZmEmMhzZshjxOPzwbM5oSQfm1r2/d9WEQAorOpv9hKWBX2aL9tabYNt/Jrg+YsqDubwVHywZ6SJfs7YxFpwttGB35G/DU=
+  template:
+    metadata:
+      name: pihole-secrets
+      namespace: pihole
+status: {}
+
+---
+# using metallb
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    # which address pool to use form the metallb configmap
+    metallb.universe.tf/address-pool: network-services
+    # key that tells metallb to share (must be same on both services UDP/TCP)
+    metallb.universe.tf/allow-shared-ip: pihole-svc
+  name: pihole-lb-tcp
+  namespace: pihole
+  labels:
+    app: pihole
+spec:
+  type: LoadBalancer
+  # force to use 1 specific IP for this service (since we are UDP and TCP sep services)
+  loadBalancerIP: 192.168.10.220
+  externalTrafficPolicy: Local
+  sessionAffinity: None
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 443
+      targetPort: https
+      protocol: TCP
+      name: https
+    - port: 53
+      targetPort: dns
+      protocol: TCP
+      name: dns
+  selector:
+    app: pihole
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    # which address pool to use from the metallb 
+    metallb.universe.tf/address-pool: network-services
+    # key that tells metallb to share ip (must be same on both services UDP/TCP)
+    metallb.universe.tf/allow-shared-ip: pihole-svc
+  name: pihole-lb-udp
+  namespace: pihole
+  labels:
+    app: pihole
+spec:
+  type: LoadBalancer
+  sessionAffinity: None
+  # force to use 1 specific IP for this service (since we are UDP and TCP sep services)
+  loadBalancerIP: 192.168.10.220
+  externalTrafficPolicy: Local
+  ports:
+    - port: 53
+      targetPort: dns-udp
+      protocol: UDP
+      name: dns-udp
+    - port: 67
+      targetPort: client-udp
+      protocol: UDP
+      name: client-udp
+  selector:
+    app: pihole
+---
+# uses cloudflared sidecar for dns https: https://github.com/crazy-max/docker-cloudflared ; https://docs.pi-hole.net/guides/dns-over-https/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: pihole
+  labels:
+    app: pihole
+  name: pihole
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pihole
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: pihole
+    spec:
+      dnsPolicy: None
+      terminationGracePeriodSeconds: 30
+      dnsConfig:
+        nameservers:
+        - 127.0.0.1
+        - 8.8.8.8
+      containers:
+      - image: pihole/pihole:v5.3.4
+        name: pihole
+        envFrom:
+          - configMapRef:
+              name: pihole-config
+          - secretRef:
+              name: pihole-secrets
+        ports:
+          - containerPort: 80
+            name: http
+            protocol: TCP
+          - containerPort: 53
+            name: dns
+            protocol: TCP
+          - containerPort: 53
+            name: dns-udp
+            protocol: UDP
+          - containerPort: 443
+            name: https
+            protocol: TCP
+          - containerPort: 67
+            name: client-udp
+            protocol: UDP
+        livenessProbe:
+          httpGet:
+            path: /admin/index.php
+            port: http
+          initialDelaySeconds: 30
+          failureThreshold: 5
+          timeoutSeconds: 5
+        readinessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /admin/index.php
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 1
+          periodSeconds: 2
+          successThreshold: 2
+          timeoutSeconds: 2
+        resources:
+          limits:
+           cpu: 500m
+           memory: 500Mi
+          requests:
+           cpu: 300m
+           memory: 384Mi
+        volumeMounts:
+          - mountPath: /etc/pihole
+            name: config
+          - mountPath: /etc/dnsmasq.d/02-custom.conf
+            name: custom-dnsmasq
+            subPath: 02-custom.conf
+          - mountPath: /etc/addn-hosts
+            name: custom-dnsmasq
+            subPath: addn-hosts
+      - image: crazymax/cloudflared:latest
+        name: cloudflared
+        # pull this out into a configmap / secrets
+        envFrom:
+          - configMapRef:
+              name: pihole-config
+        ports:
+          - containerPort: 5053
+            name: dnshttp
+            protocol: UDP
+          - containerPort: 49312
+            name: cldflare-met #metrics
+            protocol: TCP
+        resources:
+          limits:
+            cpu: 250m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 64Mi
+      nodeSelector: {}
+      affinity: {}
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+              claimName: pvc-pihole
+        - configMap:
+            defaultMode: 420
+            name: pihole-custom-dnsmasq
+          name: custom-dnsmasq
+status: {}

@@ -1,0 +1,15 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-pushgateway
+  namespace: monitoring
+  # can skip this annotation if storageClass is 'default'
+  annotations:
+    storageClassName: "local-path"
+    prometheusComponent: "true"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

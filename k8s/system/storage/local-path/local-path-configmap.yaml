@@ -1,0 +1,16 @@
+# can use this to configure the local-path provisioner to use a specific local node storage path for pvs/pv
+apiVersion: v1
+data:
+  config.json: |-
+    {
+            "nodePathMap":[
+            {
+                    "node":"DEFAULT_PATH_FOR_NON_LISTED_NODES",
+                    "paths":["/srv/usb-drive-storage/local-path"]
+            }
+            ]
+    }
+kind: ConfigMap
+metadata:
+  name: local-path-config
+  namespace: kube-system

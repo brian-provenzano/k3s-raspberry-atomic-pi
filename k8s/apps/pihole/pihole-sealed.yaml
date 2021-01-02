@@ -12,5 +12,3 @@ spec:
       creationTimestamp: null
       name: pihole-secrets
       namespace: pihole
-status: {}
-

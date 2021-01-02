@@ -233,7 +233,7 @@ extraContainerVolumes: []
 persistence:
   type: pvc
   enabled: true
-  storageClassName: nfs-managed-storage
+  storageClassName: managed-nfs-storage
   accessModes:
     - ReadWriteOnce
   size: 10Gi

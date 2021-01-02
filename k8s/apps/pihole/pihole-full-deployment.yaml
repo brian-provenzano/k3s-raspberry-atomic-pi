@@ -166,23 +166,23 @@ spec:
           - containerPort: 67
             name: client-udp
             protocol: UDP
-        # livenessProbe:
-        #   httpGet:
-        #     path: /admin/index.php
-        #     port: http
-        #   initialDelaySeconds: 30
-        #   failureThreshold: 5
-        #   timeoutSeconds: 5
-        # readinessProbe:
-        #   failureThreshold: 5
-        #   httpGet:
-        #     path: /admin/index.php
-        #     port: http
-        #     scheme: HTTP
-        #   initialDelaySeconds: 1
-        #   periodSeconds: 2
-        #   successThreshold: 2
-        #   timeoutSeconds: 2
+        livenessProbe:
+          httpGet:
+            path: /admin/index.php
+            port: http
+          initialDelaySeconds: 120
+          failureThreshold: 5
+          timeoutSeconds: 5
+        readinessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /admin/index.php
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 1
+          periodSeconds: 2
+          successThreshold: 2
+          timeoutSeconds: 2
         resources:
           limits:
            cpu: 500m

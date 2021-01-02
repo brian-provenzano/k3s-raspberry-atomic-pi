@@ -1,6 +1,0 @@
-# using the helm chart for the prometheus-operator
-#
-apiVersion: v1
-kind: Namespace
-metadata:
-   name: monitoring

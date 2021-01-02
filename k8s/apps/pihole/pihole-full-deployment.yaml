@@ -168,7 +168,7 @@ spec:
             protocol: UDP
         livenessProbe:
           httpGet:
-            path: /admin/index.php
+            path: /admin.index.php
             port: http
           initialDelaySeconds: 120
           failureThreshold: 5
@@ -176,13 +176,12 @@ spec:
         readinessProbe:
           failureThreshold: 5
           httpGet:
-            path: /admin/index.php
+            path: /admin.index.php
             port: http
             scheme: HTTP
           initialDelaySeconds: 1
-          periodSeconds: 2
-          successThreshold: 2
-          timeoutSeconds: 2
+          successThreshold: 1
+          timeoutSeconds: 5
         resources:
           limits:
            cpu: 500m

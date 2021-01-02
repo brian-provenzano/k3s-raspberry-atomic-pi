@@ -62,8 +62,8 @@ metadata:
 spec:
   type: LoadBalancer
   # force to use 1 specific IP for this service (since we are UDP and TCP sep services)
-  loadBalancerIP: 10.0.0.124
-  externalTrafficPolicy: Local
+  loadBalancerIP: 10.0.0.125
+  externalTrafficPolicy: Cluster
   sessionAffinity: None
   ports:
     - port: 80
@@ -88,6 +88,7 @@ metadata:
     # which address pool to use from the metallb 
     metallb.universe.tf/address-pool: network-services
     # key that tells metallb to share ip (must be same on both services UDP/TCP)
+    # https://metallb.universe.tf/usage/#ip-address-sharing
     metallb.universe.tf/allow-shared-ip: pihole-svc
   name: pihole-lb-udp
   namespace: pihole
@@ -96,9 +97,10 @@ metadata:
 spec:
   type: LoadBalancer
   sessionAffinity: None
+  # https://metallb.universe.tf/usage/#ip-address-sharing
   # force to use 1 specific IP for this service (since we are UDP and TCP sep services)
-  loadBalancerIP: 10.0.0.124
-  externalTrafficPolicy: Local
+  loadBalancerIP: 10.0.0.125
+  externalTrafficPolicy: Cluster
   ports:
     - port: 53
       targetPort: dns-udp
@@ -164,23 +166,23 @@ spec:
           - containerPort: 67
             name: client-udp
             protocol: UDP
-        livenessProbe:
-          httpGet:
-            path: /admin/index.php
-            port: http
-          initialDelaySeconds: 30
-          failureThreshold: 5
-          timeoutSeconds: 5
-        readinessProbe:
-          failureThreshold: 5
-          httpGet:
-            path: /admin/index.php
-            port: http
-            scheme: HTTP
-          initialDelaySeconds: 1
-          periodSeconds: 2
-          successThreshold: 2
-          timeoutSeconds: 2
+        # livenessProbe:
+        #   httpGet:
+        #     path: /admin/index.php
+        #     port: http
+        #   initialDelaySeconds: 30
+        #   failureThreshold: 5
+        #   timeoutSeconds: 5
+        # readinessProbe:
+        #   failureThreshold: 5
+        #   httpGet:
+        #     path: /admin/index.php
+        #     port: http
+        #     scheme: HTTP
+        #   initialDelaySeconds: 1
+        #   periodSeconds: 2
+        #   successThreshold: 2
+        #   timeoutSeconds: 2
         resources:
           limits:
            cpu: 500m

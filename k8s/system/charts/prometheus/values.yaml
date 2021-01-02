@@ -415,7 +415,8 @@ kubeStateMetrics:
 ## kube-state-metrics sub-chart configurable values
 ## Please see https://github.com/helm/charts/tree/master/stable/kube-state-metrics
 ##
-# kube-state-metrics:
+kube-state-metrics:
+  nodeSelector: {kubernetes.io/arch: amd64}
 
 nodeExporter:
   ## If false, node-exporter will not be installed

@@ -189,7 +189,7 @@ resources: {}
 ## Node labels for pod assignment
 ## ref: https://kubernetes.io/docs/user-guide/node-selection/
 #
-nodeSelector: {kubernetes.io/arch: amd64}
+nodeSelector: {kubernetes.io/arch: arm64}
 
 ## Tolerations for pod assignment
 ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/

@@ -74,8 +74,8 @@ testFramework:
 
 securityContext:
   runAsUser: 0
-  runAsGroup: 0
-  fsGroup: 0
+  runAsGroup: 472
+  fsGroup: 472
 
 
 extraConfigmapMounts: []

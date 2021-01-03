@@ -73,7 +73,7 @@ testFramework:
   securityContext: {}
 
 securityContext:
-  runAsUser: 0
+  runAsUser: 472
   runAsGroup: 472
   fsGroup: 472
 

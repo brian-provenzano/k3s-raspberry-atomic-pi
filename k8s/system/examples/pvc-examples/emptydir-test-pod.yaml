@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  #annotations: #this can be something from git commit etc
+  #kubernetes.io/change-cause: update image to nginx 1.16.1
+  labels:
+    app: nginx-emptydir
+  name: nginx-emptydir
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-emptydir
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      labels:
+        app: nginx-emptydir
+    spec:
+      volumes:
+        - name: nginx-www-root
+          emptyDir:
+            sizeLimit: 1G
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: beta.kubernetes.io/arch
+                    operator: NotIn
+                    values:
+                      - amd64
+          # preferredDuringSchedulingIgnoredDuringExecution:
+          # - weight: 1
+          #   preference:
+          #     matchExpressions:
+          #     - key: beta.kubernetes.io/arch
+          #       operator: NotIn
+          #       values:
+          #       - arm
+      containers:
+        - image: nginx:latest
+          name: nginx
+          volumeMounts:
+            - mountPath: "/usr/share/nginx/html"
+              name: nginx-www-root
+          resources:
+            requests:
+              memory: "64M"
+              cpu: "250m"
+            limits:
+              memory: "128M"
+              cpu: "500m"
+status: {}

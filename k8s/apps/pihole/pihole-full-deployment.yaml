@@ -143,7 +143,7 @@ spec:
         - 127.0.0.1
         - 8.8.8.8
       containers:
-      - image: pihole/pihole:v5.3.4
+      - image: pihole/pihole:v5.5.1
         name: pihole
         envFrom:
           - configMapRef:

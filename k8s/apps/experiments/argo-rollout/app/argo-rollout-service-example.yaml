@@ -1,0 +1,20 @@
+# using metallb for LB
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    # which address pool to use form the metallb configmap
+    metallb.universe.tf/address-pool: network-services
+  name: rollouts-demo
+  namespace: rollouts-demo
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Cluster
+  sessionAffinity: None
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: rollouts-demo

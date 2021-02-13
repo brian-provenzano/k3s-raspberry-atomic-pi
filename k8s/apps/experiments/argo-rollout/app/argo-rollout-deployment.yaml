@@ -21,6 +21,8 @@ spec:
       app: rollouts-demo
   template:
     metadata:
+      name: rollouts-demo
+      namespace: default
       labels:
         app: rollouts-demo
     spec:

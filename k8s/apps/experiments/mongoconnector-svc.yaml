@@ -1,2 +1,0 @@
-NAME                     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-mongoconnector-service   ClusterIP   10.43.207.252   <none>        5678/TCP   89d

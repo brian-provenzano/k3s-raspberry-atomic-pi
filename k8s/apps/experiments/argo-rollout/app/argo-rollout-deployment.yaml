@@ -40,9 +40,9 @@ spec:
             preference:
               matchExpressions:
               - key: beta.kubernetes.io/arch
-                operator: NotIn
+                operator: In
                 values:
-                - arm
+                - amd64
       containers:
       - name: rollouts-demo
         image: argoproj/rollouts-demo:yellow

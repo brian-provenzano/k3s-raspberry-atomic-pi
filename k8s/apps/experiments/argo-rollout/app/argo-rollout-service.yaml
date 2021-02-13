@@ -6,7 +6,7 @@ metadata:
     # which address pool to use form the metallb configmap
     metallb.universe.tf/address-pool: network-services
   name: rollouts-demo
-  namespace: rollouts-demo
+  namespace: default
 spec:
   type: LoadBalancer
   externalTrafficPolicy: Cluster

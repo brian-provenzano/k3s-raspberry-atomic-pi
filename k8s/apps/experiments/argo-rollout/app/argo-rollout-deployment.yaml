@@ -32,9 +32,9 @@ spec:
             nodeSelectorTerms:
             - matchExpressions:
               - key: beta.kubernetes.io/arch
-                operator: NotIn
+                operator: In
                 values:
-                - arm
+                - amd64
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 1
             preference:

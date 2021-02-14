@@ -15,10 +15,10 @@ spec:
       steps:
       - setWeight: 10
       - pause: {}
-      - setWeight: 35
-      - pause: {duration: 15}
+      - setWeight: 45
+      - pause: {}
       - setWeight: 75
-      - pause: {duration: 15}
+      - pause: {duration: 120}
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -47,7 +47,7 @@ spec:
                 - amd64
       containers:
       - name: rollouts-demo
-        image: argoproj/rollouts-demo:yellow
+        image: argoproj/rollouts-demo:blue
         ports:
         - name: http
           containerPort: 8080

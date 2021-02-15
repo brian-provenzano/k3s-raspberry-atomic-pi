@@ -33,7 +33,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: beta.kubernetes.io/hostname
+              - key: k3s.io/hostname
                 operator: In
                 values:
                 - k3s-worker-2

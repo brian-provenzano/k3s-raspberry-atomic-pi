@@ -33,18 +33,18 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: beta.kubernetes.io/arch
+              - key: beta.kubernetes.io/hostname
                 operator: In
                 values:
-                - amd64
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            preference:
-              matchExpressions:
-              - key: beta.kubernetes.io/arch
-                operator: In
-                values:
-                - amd64
+                - k3s-worker-2
+          # preferredDuringSchedulingIgnoredDuringExecution:
+          # - weight: 1
+          #   preference:
+          #     matchExpressions:
+          #     - key: beta.kubernetes.io/arch
+          #       operator: In
+          #       values:
+          #       - amd64
       containers:
       - name: rollouts-demo
         image: argoproj/rollouts-demo:blue

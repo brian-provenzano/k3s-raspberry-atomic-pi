@@ -7,10 +7,11 @@ metadata:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-    - http:
-        paths:
-        - path: /
-          backend:
-            # Reference to a Service name, also specified in the Rollout spec.strategy.canary.stableService field
-            serviceName: rollouts-demo-stable
-            servicePort: 80
+  - host: rollouts-demo.local
+    http:
+      paths:
+      - path: /
+        backend:
+          # Reference to a Service name, also specified in the Rollout spec.strategy.canary.stableService field
+          serviceName: rollouts-demo-stable
+          servicePort: 80

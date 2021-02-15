@@ -47,7 +47,7 @@ spec:
                 - amd64
       containers:
       - name: rollouts-demo-bluegreen
-        image: argoproj/rollouts-demo:green
+        image: argoproj/rollouts-demo:red
         ports:
         - name: http
           containerPort: 8080

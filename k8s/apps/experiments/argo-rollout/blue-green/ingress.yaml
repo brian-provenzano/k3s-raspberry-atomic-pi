@@ -13,14 +13,14 @@ spec:
       - path: /
         backend:
           # Reference to a Service name, also specified in the Rollout spec.strategy.canary.stableService field
-          serviceName: rollout-bluegreen-active
+          serviceName: rollouts-bluegreen-active
           servicePort: 80
 ---
 
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: rollouts-demo-stable
+  name: rollouts-bluegreen-preview
   namespace: default
   annotations:
     kubernetes.io/ingress.class: nginx

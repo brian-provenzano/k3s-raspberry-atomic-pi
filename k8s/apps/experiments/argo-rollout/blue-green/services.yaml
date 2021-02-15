@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: rollout-bluegreen-active
+  name: rollouts-bluegreen-active
   namespace: default
 spec:
   ports:

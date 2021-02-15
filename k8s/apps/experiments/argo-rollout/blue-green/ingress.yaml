@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: rollouts-bluegreen-active
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: rollouts-demo.active.local
+    http:
+      paths:
+      - path: /
+        backend:
+          # Reference to a Service name, also specified in the Rollout spec.strategy.canary.stableService field
+          serviceName: rollout-bluegreen-active
+          servicePort: 80
+---
+
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: rollouts-demo-stable
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: rollouts-demo.preview.local
+    http:
+      paths:
+      - path: /
+        backend:
+          # Reference to a Service name, also specified in the Rollout spec.strategy.canary.stableService field
+          serviceName: rollouts-bluegreen-preview
+          servicePort: 80
